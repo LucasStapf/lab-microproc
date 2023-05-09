@@ -28,7 +28,7 @@ void print_7seg() {
 
 void interrupt_high() iv 0x0008 ics ICS_AUTO {
     if (INTCON.TMR0IF) {
-        reload_tmr0(h, l)
+        reload_tmr0(0x0B, 0xDC);
         print_7seg();
     }
 }
