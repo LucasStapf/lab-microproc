@@ -51,7 +51,7 @@ void main() {
     T0CON.TMR0ON = 1;
 
     while (1) {
-        if (portb == 0) { // pull up
+        if (portb.rb0 == 0) { // pull up
             if (freq_frag) {
                 T0CON = 0b00000010; // 1:8
             } else {
