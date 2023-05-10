@@ -1,23 +1,23 @@
 
-#define SEVEN_SEG_DP 0b10000000;
-#define SEVEN_SEG_0 0b00111111;
-#define SEVEN_SEG_1 0b00000110;
-#define SEVEN_SEG_2 0b01011011;
-#define SEVEN_SEG_3 0b01001111;
-#define SEVEN_SEG_4 0b01100110;
-#define SEVEN_SEG_5 0b01101101;
-#define SEVEN_SEG_6 0b01111101;
-#define SEVEN_SEG_7 0b00000111;
-#define SEVEN_SEG_8 0b01111111;
-#define SEVEN_SEG_9 0b01100111;
+#define SEVEN_SEG_DP 0b10000000
+#define SEVEN_SEG_0 0b00111111
+#define SEVEN_SEG_1 0b00000110
+#define SEVEN_SEG_2 0b01011011
+#define SEVEN_SEG_3 0b01001111
+#define SEVEN_SEG_4 0b01100110
+#define SEVEN_SEG_5 0b01101101
+#define SEVEN_SEG_6 0b01111101
+#define SEVEN_SEG_7 0b00000111
+#define SEVEN_SEG_8 0b01111111
+#define SEVEN_SEG_9 0b01100111
 
 unsigned short dig = 0;
 const int v[] = {SEVEN_SEG_0, SEVEN_SEG_1, SEVEN_SEG_2, SEVEN_SEG_3, SEVEN_SEG_4, SEVEN_SEG_5, SEVEN_SEG_6, SEVEN_SEG_7, SEVEN_SEG_8, SEVEN_SEG_9};
 
 
 void reload_tmr0(int h, int l) {
-    TMROL = l;
-    TMROH = h;
+    TMR0L = l;
+    TMR0H = h;
     INTCON.TMR0IF = 0;
 }
 
@@ -45,19 +45,19 @@ void main() {
     
     lata = 0b00000001;
 
-    bit freq_flag = 0; // 0 : 0.25s | 1: 1s
+    bit freqFlag = 0; // 0 : 0.25s | 1: 1s
 
     reload_tmr0(0x0B, 0xDC); // valores pro H0 L0 0xBDC
     T0CON.TMR0ON = 1;
 
     while (1) {
         if (portb == 0) { // pull up
-            if (freq_frag) {
+            if (freqFlag) {
                 T0CON = 0b00000010; // 1:8
             } else {
                 T0CON = 0b00000100; // 1:32
             }
-            freq_frag = ~freq_frag;
+            freqFlag = ~freqFlag;
         }
     }
 }
