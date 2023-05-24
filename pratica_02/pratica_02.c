@@ -57,49 +57,49 @@ void main() {
            
            switch (PORTB) {
                   case B1:
-                       timerl = 0x1E;
+                       timerl = 0x24;
                        timerh = 0xFE;
                        T0CON.TMR0ON = 1;
                        while (PORTB == B1);
                        break;
                   case B2:
-                       timerl = 0x56;
+                       timerl = 0x5D;
                        timerh = 0xFE;
                        T0CON.TMR0ON = 1;
                        while (PORTB == B2);
                        break;
                   case B3:
-                       timerl = 0x85;
+                       timerl = 0x8C;
                        timerh = 0xFE;
                        T0CON.TMR0ON = 1;
                        while (PORTB == B3);
                        break;
                   case B4:
-                       timerl = 0x9A;
+                       timerl = 0xA2;
                        timerh = 0xFE;
                        T0CON.TMR0ON = 1;
                        while (PORTB == B4);
                        break;
                   case B5:
-                       timerl = 0xC1;
+                       timerl = 0xC9;
                        timerh = 0xFE;
                        T0CON.TMR0ON = 1;
                        while (PORTB == B5);
                        break;
                   case B6:
-                       timerl = 0xE4;
+                       timerl = 0xEC;
                        timerh = 0xFE;
                        T0CON.TMR0ON = 1;
                        while (PORTB == B6);
                        break;
                   case B7:
-                       timerl = 0x03;
+                       timerl = 0x0A;
                        timerh = 0xFF;
                        T0CON.TMR0ON = 1;
                        while (PORTB == B7);
                        break;
                   case B8:
-                       timerl = 0x0F;
+                       timerl = 0x17;
                        timerh = 0xFF;
                        T0CON.TMR0ON = 1;
                        while (PORTB == B8);
