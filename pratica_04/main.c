@@ -18,6 +18,17 @@ unsigned short duty;
 char buff[17];
 unsigned int count;
 char buff_rot[20];
+unsigned char flag;
+
+void interrupt_high() iv 0x0008 ics ICS_AUTO {
+    if (INTCON.TMR0IF == 1) {
+        INTCON.TMR0IF = 0;
+        TMR0L = 0xF7;
+        TMR0H = 0xC2;
+
+        flag = 1;
+    }
+}
 
 void ConfigInterrupt_Global() {
        INTCON.GIEH = 1;
@@ -26,7 +37,16 @@ void ConfigInterrupt_Global() {
 }
 
 void main() {
+        T0CON = 0b00000101;
 
+        TMR0L = 0xF7;
+        TMR0H = 0xC2;
+        
+        INTCON.TMR0IF = 0;
+        INTCON2.TMR0IP = 1;
+        INTCON.TMR0IE = 1;
+        T0CON.TMR0ON = 1;
+    
        ANSELB = 0;
        ANSELD = 0; // Porta D como digital
        TRISD = 0xFF; // Porta D como entrada
@@ -43,7 +63,13 @@ void main() {
 
        count = 0;
        duty = 0;
+       flag = 0;
+       
        sprintf(buff, "PWM = 0%%   ");
+       
+       sprintf(buff_rot, "ROT = %4d rpm", count);
+       Lcd_Out(2,1,buff_rot);
+       
        PWM1_Init(10000);                    // Initialize PWM2 module at 5KHz
        PWM1_Start();
        while(1){
@@ -64,9 +90,15 @@ void main() {
                       sprintf(buff, "PWM = 100%% ");
                 }
                 
-                count = TMR3L;
-                sprintf(buff_rot, "ROT: %d", count);
-                Lcd_Out(2,1,buff_rot);
+                if(flag){
+                         flag = 0;
+                         count = 120 * TMR3L/7;
+                         TMR3L = 0;
+                         sprintf(buff_rot, "ROT = %4d rpm", count);
+                         Lcd_Out(2,1,buff_rot);
+                }
+
+
                 PWM1_Set_Duty(duty);
                 Lcd_Out(1,1,buff);
        }
