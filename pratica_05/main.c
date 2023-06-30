@@ -14,39 +14,119 @@ sbit LCD_D6_Direction at TRISB2_bit;
 sbit LCD_D7_Direction at TRISB3_bit;
 // End LCD module connections
 
+
 /*unsigned short*/int count_me, count_ma;
 char buff_1[17], buff_2[17];
-short aceita; //0 - madeira 1 - metal
+short material; //0 - madeira 1 - metal
+short opt, cap, ind;
+
+//void interrupt_high() iv 0x0008 ics ICS_AUTO {
+//     if (INTCON.INT0IF) {
+//         INTCON.INT0IF = 0;
+//         opt = 1;
+//     } else if (INTCON3.INT1IF) {
+//         INTCON3.INT1IF = 0;
+//         cap = 1;
+//     } else if (INTCON3.INT2IF) {
+//         INTCON3.INT2IF = 0;
+//         ind = 1;
+//     }
+//}
+
+void ConfigInterrupt_Global() {
+     INTCON.GIEH = 1;
+     INTCON.GIEL = 1;
+     //RCON.IPEN = 1;
+}
 
 void main() {
-     ANSELB = 0; // LCD
-     TRISB = 0b00000000; // Porta B
+
+     //ConfigInterrupt_Global();
      
+//     INTCON.INT0IE = 1;
+//     INTCON3.INT1IE = 1;
+//     INTCON3.INT2IE = 1;
+     
+     ANSELB = 0; // LCD
+    //TRISB = 0b00000000; // Porta B
+    
      Lcd_Init();                 // Initialize LCD
      Lcd_Cmd(_LCD_CLEAR);
      Lcd_Cmd(_LCD_CURSOR_OFF);
      
      ANSELD = 0; // Porta D como digital
-     TRISD = 0b00000011; // Porta D como entrada
-       
-     aceita = -1;
+     TRISD = 0xFF; // Porta D como entrada
+
+     ANSELC = 0;
+     TRISC = 0b00000111;
+     
+     material = -1;
      count_me = 0;
      count_ma = 0;
+     opt = cap = ind = 0;
      
      sprintf(buff_1, "Aceita: ");
      sprintf(buff_2, "MA: %2d  ME: %2d", count_ma, count_me);
      
+     LATC.F7 = 0;
+     LATC.F6 = 1;
+     LATC.F5 = 0;
+     LATC.F4 = 1;
+                 
      while(1){
               Lcd_Out(1,1,buff_1);
               Lcd_Out(2,1,buff_2);
               
               if(portD.f0 == 0){
-                    aceita = 0;
+                    material = 0;
                     sprintf(buff_1, "Aceita: MADEIRA");
-              }else if(portD.f1 == 0){
-                    aceita = 1;
+              }
+              
+              if(portD.f1 == 0){
+                    material = 1;
                     sprintf(buff_1, "Aceita: METAL  ");
               }
               
+              if (!PORTC.F0) {
+                    LATC.F7 = 0;
+                    LATC.F6 = 0;
+                    Delay_ms(2000);
+                    LATC.F7 = 1;
+                    LATC.F6 = 0;
+                    while (!PORTC.F0);
+              }
+
+              if (!PORTC.F2) {
+                 ind = 1;
+                 while (!PORTC.F2);
+              }
+
+              if (!PORTC.F1) {
+
+//                 while (!PORTC.F1);
+                 if (ind != material) {
+                    Delay_ms(3450);
+                    LATC.F5 = 1;
+                    LATC.F4 = 0;
+                    Delay_ms(1000);
+                    LATC.F5 = 0;
+                    LATC.F4 = 1;
+                 } else {
+                    Delay_ms(5500);
+                 }
+
+                 LATC.F7 = 0;
+                 LATC.F6 = 1;
+                 
+                 if (ind) {
+                    count_me++;
+                 } else {
+                   count_ma++;
+                 }
+
+                 ind = 0;
+              }
+              
+              sprintf(buff_2, "MA: %2d  ME: %2d", count_ma, count_me);
      }
 }
