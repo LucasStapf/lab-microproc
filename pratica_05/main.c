@@ -15,40 +15,14 @@ sbit LCD_D7_Direction at TRISB3_bit;
 // End LCD module connections
 
 
-/*unsigned short*/int count_me, count_ma;
+int count_me, count_ma;
 char buff_1[17], buff_2[17];
 short material; //0 - madeira 1 - metal
 short opt, cap, ind;
 
-//void interrupt_high() iv 0x0008 ics ICS_AUTO {
-//     if (INTCON.INT0IF) {
-//         INTCON.INT0IF = 0;
-//         opt = 1;
-//     } else if (INTCON3.INT1IF) {
-//         INTCON3.INT1IF = 0;
-//         cap = 1;
-//     } else if (INTCON3.INT2IF) {
-//         INTCON3.INT2IF = 0;
-//         ind = 1;
-//     }
-//}
-
-void ConfigInterrupt_Global() {
-     INTCON.GIEH = 1;
-     INTCON.GIEL = 1;
-     //RCON.IPEN = 1;
-}
-
 void main() {
-
-     //ConfigInterrupt_Global();
-     
-//     INTCON.INT0IE = 1;
-//     INTCON3.INT1IE = 1;
-//     INTCON3.INT2IE = 1;
      
      ANSELB = 0; // LCD
-    //TRISB = 0b00000000; // Porta B
     
      Lcd_Init();                 // Initialize LCD
      Lcd_Cmd(_LCD_CLEAR);
@@ -103,7 +77,6 @@ void main() {
 
               if (!PORTC.F1) {
 
-//                 while (!PORTC.F1);
                  if (ind != material) {
                     Delay_ms(3450);
                     LATC.F5 = 1;
